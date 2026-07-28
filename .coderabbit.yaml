@@ -1,0 +1,181 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+#
+# CodeRabbit config — auto-review of UDC Workshop 5 homework PRs.
+# Workshop: "Agent Skills".
+# Place this file in the ROOT of the practice repo.
+
+language: "uk-UA"
+tone_instructions: >
+  Ментор воркшопу UDC. Відповідай українською, доброзичливо але вимогливо.
+  Що пропущено — поясни що і чому. Статуси: ✅ зроблено, ⚠️ частково, ❌ пропущено.
+
+early_access: false
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  changed_files_summary: true
+  sequence_diagrams: false
+
+  auto_review:
+    enabled: true
+    drafts: true
+    auto_incremental_review: true
+    auto_pause_after_reviewed_commits: 0
+    base_branches:
+      - ".*"
+    ignore_title_keywords:
+      - "WIP"
+      - "[skip review]"
+    ignore_usernames:
+      - "dependabot[bot]"
+      - "renovate[bot]"
+      - "github-actions[bot]"
+
+  # ── File filters ──────────────────────────────────────────────
+  path_filters:
+    - ".agents/**"
+    - ".claude/skills/**"
+    - ".cursor/skills/**"
+    - "docs/**"
+    - "app/AGENTS.md"
+    - "AGENTS.md"
+    - "app/src/**"
+    - "!**/node_modules/**"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/coverage/**"
+    - "!*.lock"
+    - "!**/package-lock.json"
+    - "!**/yarn.lock"
+    - "!**/*.min.js"
+    - "!**/*.min.css"
+
+  # ── Path-specific review instructions ─────────────────────────
+  path_instructions:
+    - path: ".agents/skills/creating-widget/**"
+      instructions: |
+        Task A — простий skill. Перевір: SKILL.md з реальним frontmatter (name +
+        description), description достатньо конкретний, щоб тригеритись саме на
+        "додай новий widget"-подібні запити (не generic). Instructions кодують
+        реальний патерн з app/src/widgets/badge/ (pure factory + register() +
+        колоковані *.test.ts + імпорт у widgets/index.ts). Не має бути порожнім
+        шаблоном.
+
+    - path: ".agents/skills/architecture-deep-dive/**"
+      instructions: |
+        Task B — skill з references/. Перевір: SKILL.md короткий (метадані +
+        коли використовувати), а глибина — у references/architecture.md, і ця
+        глибина ВІРНА відносно app/src/core/registry.ts та app/src/widgets/**
+        (реальні назви функцій, реальний golden path). Порожній references/ або
+        references, що дублює SKILL.md замість доповнювати — ⚠️/❌.
+
+    - path: ".agents/skills/analyzing-bundle-size/**"
+      instructions: |
+        Task C — skill зі scripts/. Перевір: SKILL.md коротко пояснює, коли
+        викликати скрипт; є реальний виконуваний файл у scripts/ (не лише
+        коментар-заглушка), який запускає `npm run build` у app/ і читає розмір
+        dist/bundle.js (а не вигадує число). НЕ намагайся сам запускати скрипт —
+        статичний рев'ю коду скрипта достатній.
+
+    - path: "app/AGENTS.md"
+      instructions: |
+        Task A (частина) — перевір, що з'явилась секція "## Skills", яка
+        перелічує всі три створені скіли з коротким описом кожного. Решта файлу
+        (Stack/Commands/Architecture/Conventions/Guardrails) вже була заповнена
+        в стартовому репо — не мала суттєво змінитись.
+
+    - path: "docs/ab-validation.md"
+      instructions: |
+        Task D — A/B-валідація. Перевір: той самий запит (materials/ab-task.md,
+        "додай alert widget") зі скілом ON і OFF, є результат A і результат B,
+        таблиця відмінностей із КОНКРЕТИКОЮ (шлях файлу, чи викликано register(),
+        чи є тест, чи оновлено widgets/index.ts) і висновок. Порожні плейсхолдери
+        <…> — ⚠️/❌.
+
+    - path: "docs/task-e-bonus.md"
+      instructions: |
+        Task E (bonus) — один із двох шляхів: крос-tool перевірка (2 інструменти,
+        той самий промпт, розбіжності, висновок) або встановлений community skill
+        (джерело, що зробив, адаптації). Необов'язкове; відсутність не помилка.
+
+    - path: "app/src/**"
+      instructions: |
+        Якщо код застосунку змінено (напр. новий widget з Task D) — перевір, що
+        зміна йде «золотим шляхом»: pure factory function, register() виклик,
+        колокований *.test.ts, імпорт у widgets/index.ts, named exports, без
+        `any`, без зміни публічного API registry.ts (register/create/listWidgets).
+
+  # ── Pre-merge checks (grading) ────────────────────────────────
+  pre_merge_checks:
+    title:
+      mode: "warning"
+      requirements: >
+        PR title should follow: "WS5: <participant-name>".
+
+    description:
+      mode: "warning"
+
+    # Docstring coverage is irrelevant for this homework (skill/doc artifacts,
+    # a tiny sample app) — without this it fires a noisy default warning.
+    docstrings:
+      mode: "off"
+
+    custom_checks:
+      - mode: "warning"
+        name: "Task A — simple skill (creating-widget)"
+        instructions: >
+          Static review only — do NOT attempt to execute anything. Check
+          .agents/skills/creating-widget/SKILL.md exists with real YAML
+          frontmatter (name, description) and concrete instructions tied to
+          app/src/widgets/badge/'s real pattern (pure factory, register() call,
+          colocated test, widgets/index.ts import), AND app/AGENTS.md has a new
+          "## Skills" section listing it. PASS if concrete; FAIL if the raw
+          template or missing.
+
+      - mode: "warning"
+        name: "Task B — skill with references/"
+        instructions: >
+          Static review only. Check .agents/skills/architecture-deep-dive/
+          SKILL.md is short (metadata + when-to-use) with the depth in
+          references/architecture.md, and that reference content is accurate
+          against app/src/core/registry.ts and app/src/widgets/** (real
+          function/file names). PASS if references/ has real, accurate depth;
+          FAIL if missing, empty, or just duplicates SKILL.md.
+
+      - mode: "warning"
+        name: "Task C — skill with scripts/"
+        instructions: >
+          Static review only — do NOT attempt to execute the script (the review
+          sandbox has no installed dependencies). Check
+          .agents/skills/analyzing-bundle-size/SKILL.md exists and scripts/
+          contains a real script (not a comment-only stub) that runs `npm run
+          build` in app/ and reads the actual dist/bundle.js size. PASS if the
+          script does real work; FAIL if missing or a stub with no real logic.
+
+      - mode: "warning"
+        name: "Task D — A/B validation"
+        instructions: >
+          Static review only — do NOT attempt to execute the test suite. Check
+          docs/ab-validation.md documents the SAME prompt (materials/ab-task.md)
+          run with the creating-widget skill available and removed, with a
+          concrete difference table and a conclusion (not placeholders). If the
+          diff keeps the skill-assisted code change in app/src, check it also
+          adds a regression test. PASS if a real difference is shown; FAIL if
+          placeholders or missing.
+
+      - mode: "warning"
+        name: "Task E — bonus (cross-tool or community skill)"
+        instructions: >
+          Optional. If docs/task-e-bonus.md exists, check it completes ONE full
+          path (cross-tool comparison across 2 tools, OR a community skill
+          installed + adapted + tried) with a concrete conclusion, not both
+          left half-empty. Absence is NOT a failure.
+
+chat:
+  auto_reply: true
