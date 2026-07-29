@@ -2,8 +2,14 @@
 
 > Copy to `docs/ab-validation.md` and fill in. Run the SAME prompt twice — once
 > with your `creating-widget` skill available, once with it temporarily
-> removed/renamed (e.g. `.agents/skills/creating-widget` →
-> `.agents/skills/creating-widget.off`), in a NEW chat each time.
+> **moved entirely out of `.agents/skills/`** (e.g. to a repo-root scratch
+> folder: `mv .agents/skills/creating-widget /tmp/creating-widget-disabled`,
+> or just `git rm -r .agents/skills/creating-widget` and `git checkout --
+> .agents/skills/creating-widget` afterward to restore it) — in a NEW chat
+> each time. Just renaming the folder in place (e.g. adding a `.off` suffix)
+> is NOT reliable: some tools discover any `SKILL.md` found anywhere under
+> `.agents/skills/`, so a renamed-but-still-nested folder can still get
+> picked up.
 
 **Skill under test:** `creating-widget`
 **Prompt (same for A and B):** the change request from `materials/ab-task.md`
