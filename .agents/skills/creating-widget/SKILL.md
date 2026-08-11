@@ -1,8 +1,7 @@
 ---
-
 name: creating-widget
 description: Use this skill when asked to add a new widget or component to the widget-registry library. It defines the project's required widget structure, registration pattern, colocated tests, and index import.
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---
 
 # Creating Widget
 
@@ -86,8 +85,9 @@ import "./alert/alert.js";
 Run:
 
 ```bash
-cd app && npm test
-cd app && npm run typecheck
+cd app
+npm test
+npm run typecheck
 ```
 
 Confirm that the new widget contains a module-level registration:

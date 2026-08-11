@@ -5,6 +5,7 @@
 ### Community skill
 
 Anthropic `skill-creator`
+Copy-Item -Recurse temp-anthropic-skills\skills\skill-creator .agents\skills\skill-creator
 
 ### How it was used
 
